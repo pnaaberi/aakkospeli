@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aakkospeli</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;    
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px; 
+            box-sizing: border-box;
+            overflow-x: hidden; 
+        }
+
+        .main-layout-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: center; 
+            align-items: flex-start; 
+            gap: 30px;
+            width: 100%; 
+            max-width: 1040px; 
+            margin-left: auto;
+            margin-right: auto;
+            position: relative; 
+            left: 155px;        
+        }
+
+        .game-area-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 700px; 
+            flex-shrink: 0; 
+        }
+
+        .game-title {
+            font-size: 2.6em;
+            font-weight: 700;
+            color: #4CAF50;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px #000000;
+            letter-spacing: 0.5px; 
+            text-align: center;
+        }
+
+        #timer-display {
+            font-size: 1.5em;
+            color: #555;
+            margin-bottom: 15px;
+            font-weight: 700; 
+            text-align: center;
+        }
+        
+        .start-game-prompt {
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            min-height: 300px; 
+            width: 100%;
+            background-color: #2c2c2c; 
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.6);
+            box-sizing: border-box;
+            margin-bottom: 10px; 
+        }
+
+        #start-game-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.3em;
+            font-weight: 700;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+        }
+        #start-game-button:hover {
+            background-color: #388E3C;
+            transform: translateY(-2px);
+        }
+
+        .game-container {
+            text-align: center;
+            background-color: #2c2c2c;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.6);
+            width: 100%; 
+            box-sizing: border-box;
+        }
+
+        .stacked-area {
+            min-height: 60px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+            border: 2px solid #5a5a5a;
+            border-radius: 6px;
+            background-color: #383838;
+        }
+
+        .letter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, 60px);
+            gap: 10px;
+            justify-content: center;
+            align-content: start; 
+            margin-bottom: 20px;
+            padding: 10px; 
+            border: 2px solid #5a5a5a;
+            border-radius: 6px;
+        }
+
+        .letter-card {
+            box-sizing: border-box;
+            background-color: #4f4f4f;
+            color: #ffffff;
+            font-size: 1.9em; 
+            font-weight: 700;
+            border: 2px solid #707070;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s, border-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
+            user-select: none;
+        }
+
+        .letter-card:hover {
+            background-color: #606060;
+            border-color: #8a8a8a;
+            transform: scale(1.07);
+        }
+
+        .letter-card.stacked {
+            background-color: #00796B;
+            border-color: #004D40;
+            color: #E0F2F1;
+            font-size: 1.2em; 
+            font-weight: 400; 
+            width: 45px;
+            height: 45px;
+            margin: 2px;
+            cursor: default;
+            transform: none;
+        }
+
+        .letter-card.flash-red { animation: flashRed 0.4s; }
+        @keyframes flashRed {
+            0%, 100% { background-color: #4f4f4f; border-color: #707070; }
+            50% { background-color: #E53935; border-color: #C62828; }
+        }
+
+        .controls {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .controls button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .controls button:hover { background-color: #0056b3; transform: translateY(-1px); }
+        .controls button:active { transform: translateY(0px); }
+
+        #congratulations-area {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .congratulations {
+            padding: 10px;
+            background-color: #383838;
+            color: #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 400;
+            border: 1px solid #5a5a5a;
+        }
+        .congratulations p { margin-bottom: 8px; }
+
+        .player-name-input-area {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #3e3e3e;
+            border-radius: 6px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border: 1px solid #5a5a5a;
+        }
+        .player-name-input-area input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #707070;
+            background-color: #4f4f4f;
+            color: #e0e0e0;
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 0.9em;
+        }
+        .player-name-input-area button#save-score-button {
+            background-color: #4CAF50; 
+            padding: 10px 15px;
+            font-size: 0.9em;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .player-name-input-area button#save-score-button:hover { background-color: #388E3C; transform: translateY(-1px);}
+        .player-name-input-area button#save-score-button:active {transform: translateY(0px);}
+
+
+        .hof-panel {
+            width: 280px;
+            flex-shrink: 0;
+            margin-top: 6.5rem; 
+        }
+        .hof-panel h3 { 
+            margin-top: 0; 
+            margin-bottom: 12px;
+            color: #777;
+            font-size: 1.2em; 
+            font-weight: 700;
+            text-align: left;
+            letter-spacing: 0.2px;
+        }
+        #hall-of-fame-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 15px;
+        }
+        #hall-of-fame-list li {
+            margin-bottom: 8px; 
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline; 
+            line-height: 1.5; 
+        }
+        .hof-entry {
+            display: flex; 
+            flex-grow: 1;  
+            margin-right: 10px; 
+            overflow: hidden; 
+        }
+        .hof-rank {
+            flex-shrink: 0; 
+            width: 2.5em;   
+            text-align: left;
+            color: #aaa;
+            margin-right: 0.5em; 
+        }
+        .hof-player-name {
+            flex-grow: 1; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #aaa;
+        }
+        #hall-of-fame-list li .hof-time {
+            font-weight: 400; 
+            color: #888;
+            flex-shrink: 0; 
+            text-align: right; 
+            min-width: 5.5em;  
+            font-variant-numeric: tabular-nums; /* LISÄTTY */
+        }
+
+        #clear-hof-button {
+            display: inline-block;
+            background-color: transparent;
+            color: #6c757d;
+            border: none;
+            padding: 5px 0;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 400;
+            text-decoration: underline;
+            transition: color 0.2s;
+            margin-top: 5px;
+        }
+        #clear-hof-button:hover { color: #8cb3be; }
+
+        .overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.88);
+            display: none; 
+            justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease; 
+            padding: 20px; box-sizing: border-box;
+        }
+        .overlay.visible { 
+            display: flex; 
+            opacity: 1; visibility: visible; 
+        }
+        .overlay-content {
+            background-color: #3a3a3a; padding: 25px 35px; border-radius: 10px;
+            text-align: center; color: #e0e0e0; box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            transform: scale(0.95); transition: transform 0.3s ease;
+            max-height: 90vh; overflow-y: auto;
+        }
+        .overlay.visible .overlay-content { transform: scale(1); }
+        .overlay-content h3 { margin-top: 0; margin-bottom: 15px; color: #4CAF50; font-size: 1.6em; font-weight: 700; }
+        .overlay-content p { font-size: 1.3em; margin-bottom: 20px; letter-spacing: 0.5px; line-height: 1.6; max-width: 550px; word-wrap: break-word; }
+        
+        .overlay-content button {
+            background-color: #6c757d; 
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 700;
+            transition: background-color 0.2s;
+            margin: 5px; 
+        }
+        .overlay-content button:hover { background-color: #5a6268; }
+
+        .overlay-content button#confirm-clear-hof-yes { 
+            background-color: #c62828; 
+        }
+        .overlay-content button#confirm-clear-hof-yes:hover {
+            background-color: #a52121;
+        }
+
+        /* Responsiivisuus */
+        @media (max-width: 1100px) { /* Piste jolloin sivuttaissiirto poistuu */
+             .main-layout-wrapper {
+                left: 0; 
+            }
+        }
+
+        @media (max-width: 960px) { /* Piste, jossa Kunniataulu siirtyy pelin alle */
+            .main-layout-wrapper {
+                flex-direction: column;
+                align-items: center; 
+                /* left: 0; on jo yllä, mutta varmistetaan */
+            }
+            .game-area-wrapper { width: 100%; max-width: 700px; }
+            .hof-panel {
+                width: 100%;
+                max-width: 700px; /* Tai kapeampi, esim. 400px, jos halutaan */
+                margin-top: 30px; 
+                margin-left: 0; 
+                display: flex; /* Keskittää lapsensa */
+                flex-direction: column;
+                align-items: center;
+            }
+            .hof-panel h3 { 
+                text-align: center; /* Keskittää otsikon */
+            }
+            #hall-of-fame-list {
+                width: auto; /* Leveys sisällön mukaan */
+                /* max-width: 300px; /* Esimerkki maksimileveydestä listalle */
+            }
+            /* Li-elementin justify-content: space-between; säilyy, joten sisäinen tasaus toimii */
+            /* .hof-entryn justify-content: flex-start; säilyy */
+            #clear-hof-button { 
+                /* display: block; margin-left: auto; margin-right: auto; // Vanha tapa keskittää */
+                /* Koska .hof-panel on nyt flex column ja align-items:center, tämäkin keskittyy */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .game-title { font-size: 2.0em; }
+            #timer-display { font-size: 1.3em; }
+            .letter-grid { gap: 8px; padding: 8px; grid-template-columns: repeat(auto-fit, 50px); }
+            .letter-card { width: 50px; height: 50px; font-size: 1.6em; } 
+            .letter-card.stacked { width: 38px; height: 38px; font-size: 1.0em; } 
+            .controls button { font-size: 0.85em; padding: 8px 15px; }
+            .congratulations { font-size: 1.1em; }
+            .player-name-input-area { flex-direction: column; gap: 8px; }
+            .player-name-input-area input[type="text"] { width: 100%; box-sizing: border-box; }
+            .player-name-input-area button { width: 100%; }
+            .hof-panel { width: 90%; } 
+            .start-game-prompt { min-height: 200px; } 
+            #start-game-button { font-size: 1.1em; padding: 12px 25px; }
+        }
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .main-layout-wrapper { gap: 15px; }
+            .game-title { font-size: 1.7em; }
+            #timer-display { font-size: 1.2em; }
+            .game-container { padding: 15px; }
+            .letter-grid { gap: 6px; padding: 6px; grid-template-columns: repeat(auto-fit, 42px); }
+            .letter-card { width: 42px; height: 42px; font-size: 1.3em; } 
+            .letter-card.stacked { width: 30px; height: 30px; font-size: 0.9em; } 
+            .controls { gap: 8px; }
+            .controls button { font-size: 0.8em; padding: 8px 12px; }
+            .congratulations { font-size: 1em; }
+            .hof-panel h3 { font-size: 1.1em; }
+            #hall-of-fame-list { /* max-width: 260px; /* Esimerkki kapeammasta listasta */ }
+            #hall-of-fame-list li { font-size: 0.85em; padding: 5px 8px; }
+            .hof-rank { width: 2em; margin-right: 0.3em;} 
+            #hall-of-fame-list li .hof-time { min-width: 4.5em; } 
+            #clear-hof-button { font-size: 0.75em; padding: 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-layout-wrapper">
+        <div class="game-area-wrapper">
+            <h1 class="game-title">Aakkospeli</h1>
+            
+            <div id="start-game-area" class="start-game-prompt">
+                <button id="start-game-button">Aloita peli</button>
+            </div>
+
+            <div id="timer-display" class="timer" style="display: none;">00:00.0</div>
+            <div class="game-container" style="display: none;">
+                <div id="correctly-stacked-area" class="stacked-area"></div>
+                <div id="letter-display-area" class="letter-grid"></div>
+                <div class="controls">
+                    <button id="reset-button">Nollaa</button>
+                    <button id="cheat-sheet-button">Lunttilappu</button>
+                </div>
+            </div>
+
+            <div id="congratulations-area" style="display: none;">
+                 <div class="congratulations">
+                    <p>Onneksi olkoon! 🎉 Opit aakkoset!</p>
+                    <p id="final-time-display"></p>
+                </div>
+                <div class="player-name-input-area">
+                    <input type="text" id="player-name" placeholder="Kirjoita nimesi (max 15)" maxlength="15">
+                    <button id="save-score-button">Tallenna</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="hall-of-fame-panel" class="hof-panel">
+            <h3>Kunniataulu</h3>
+            <ol id="hall-of-fame-list"></ol>
+            <button id="clear-hof-button">Tyhjennä Kunniataulu</button>
+        </div>
+    </div>
+
+    <div id="cheat-sheet-overlay" class="overlay">
+        <div class="overlay-content">
+            <h3>Suomen aakkoset:</h3>
+            <p>A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Å, Ä, Ö</p>
+            <button id="close-cheat-sheet">Sulje</button>
+        </div>
+    </div>
+
+    <div id="clear-hof-confirm-overlay" class="overlay">
+        <div class="overlay-content">
+            <h3>Varoitus</h3>
+            <p>Haluatko varmasti tyhjentää koko kunniataulun? Tätä toimintoa ei voi peruuttaa.</p>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                <button id="confirm-clear-hof-yes">Kyllä, tyhjennä</button>
+                <button id="confirm-clear-hof-no">Ei, peruuta</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const finnishAlphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Å', 'Ä', 'Ö'];
+            let shuffledAlphabet = [];
+            let correctlySelectedLetters = [];
+            let expectedNextLetterIndex = 0;
+
+            // DOM Elementit
+            const letterDisplayArea = document.getElementById('letter-display-area');
+            const correctlyStackedArea = document.getElementById('correctly-stacked-area');
+            const resetButton = document.getElementById('reset-button');
+            const cheatSheetButton = document.getElementById('cheat-sheet-button');
+            const cheatSheetOverlay = document.getElementById('cheat-sheet-overlay');
+            const closeCheatSheetButton = document.getElementById('close-cheat-sheet');
+            const congratulationsArea = document.getElementById('congratulations-area');
+            const finalTimeDisplay = document.getElementById('final-time-display');
+            const playerNameInput = document.getElementById('player-name');
+            const saveScoreButton = document.getElementById('save-score-button');
+            
+            const timerDisplay = document.getElementById('timer-display');
+            const gameContainer = document.querySelector('.game-container');
+            const startGameArea = document.getElementById('start-game-area');
+            const startGameButton = document.getElementById('start-game-button');
+
+            let startTime = 0;
+            let timerInterval = null;
+            let elapsedTime = 0;
+            
+            const hofList = document.getElementById('hall-of-fame-list');
+            const clearHofButton = document.getElementById('clear-hof-button');
+            const HOF_STORAGE_KEY = 'aakkospeliHallOfFame';
+            const MAX_HOF_ENTRIES = 5;
+
+            const clearHofConfirmOverlay = document.getElementById('clear-hof-confirm-overlay');
+            const confirmClearHofYesButton = document.getElementById('confirm-clear-hof-yes');
+            const confirmClearHofNoButton = document.getElementById('confirm-clear-hof-no');
+
+
+            function formatTime(ms) {
+                const totalSeconds = Math.floor(ms / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                const tenths = Math.floor((ms % 1000) / 100);
+                return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${tenths}`;
+            }
+
+            function startTimer() {
+                if (timerInterval) clearInterval(timerInterval);
+                elapsedTime = 0; 
+                startTime = Date.now(); 
+                timerInterval = setInterval(() => {
+                    const currentElapsedTime = Date.now() - startTime;
+                    if(timerDisplay) timerDisplay.textContent = formatTime(currentElapsedTime);
+                }, 100);
+            }
+
+            function stopTimer() {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                elapsedTime = Date.now() - startTime;
+            }
+
+            function resetTimer() {
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = null;
+                elapsedTime = 0;
+                if(timerDisplay) timerDisplay.textContent = formatTime(0);
+            }
+
+            function shuffleArray(array) {
+                let currentIndex = array.length,  randomIndex;
+                while (currentIndex != 0) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+                    [array[currentIndex], array[randomIndex]] = [
+                    array[randomIndex], array[currentIndex]];
+                }
+                return array;
+            }
+            
+            function startGame() { 
+                if(startGameArea) startGameArea.style.display = 'none';
+                if(timerDisplay) timerDisplay.style.display = 'block';
+                if(gameContainer) gameContainer.style.display = 'block';
+                if(congratulationsArea) congratulationsArea.style.display = 'none'; 
+
+                shuffledAlphabet = shuffleArray([...finnishAlphabet]);
+                correctlySelectedLetters = [];
+                expectedNextLetterIndex = 0;
+
+                if(letterDisplayArea) letterDisplayArea.innerHTML = '';
+                if(correctlyStackedArea) correctlyStackedArea.innerHTML = '';
+                if(playerNameInput) playerNameInput.value = '';
+
+                shuffledAlphabet.forEach(letter => {
+                    const card = document.createElement('div');
+                    card.classList.add('letter-card');
+                    card.textContent = letter;
+                    card.dataset.letter = letter;
+                    card.addEventListener('click', handleLetterClick);
+                    if(letterDisplayArea) letterDisplayArea.appendChild(card);
+                });
+                
+                resetTimer(); 
+                startTimer(); 
+            }
+
+            function handleLetterClick(event) {
+                const clickedCard = event.target.closest('.letter-card');
+                if (!clickedCard || clickedCard.classList.contains('stacked') || (letterDisplayArea && !letterDisplayArea.contains(clickedCard)) ) {
+                     return;
+                }
+                const clickedLetter = clickedCard.dataset.letter;
+
+                if (correctlySelectedLetters.length === finnishAlphabet.length) {
+                    return; 
+                }
+
+                if (clickedLetter === finnishAlphabet[expectedNextLetterIndex]) {
+                    if (letterDisplayArea && letterDisplayArea.contains(clickedCard)) {
+                         letterDisplayArea.removeChild(clickedCard);
+                    }
+
+                    const stackedCard = document.createElement('div');
+                    stackedCard.classList.add('letter-card', 'stacked');
+                    stackedCard.textContent = clickedLetter;
+                    if(correctlyStackedArea) correctlyStackedArea.appendChild(stackedCard);
+
+                    correctlySelectedLetters.push(clickedLetter);
+                    expectedNextLetterIndex++;
+
+                    if (correctlySelectedLetters.length === finnishAlphabet.length) {
+                        stopTimer();
+                        if(congratulationsArea) congratulationsArea.style.display = 'block';
+                        if(finalTimeDisplay) finalTimeDisplay.textContent = `Aikasi: ${formatTime(elapsedTime)}`;
+                        if(playerNameInput) playerNameInput.focus();
+                    }
+                } else {
+                    clickedCard.classList.add('flash-red');
+                    setTimeout(() => {
+                        if (letterDisplayArea && letterDisplayArea.contains(clickedCard)) { 
+                           clickedCard.classList.remove('flash-red');
+                        }
+                    }, 400);
+                }
+            }
+            
+            function loadScores() {
+                const scoresJSON = localStorage.getItem(HOF_STORAGE_KEY);
+                return scoresJSON ? JSON.parse(scoresJSON) : [];
+            }
+
+            function saveScores(scores) {
+                localStorage.setItem(HOF_STORAGE_KEY, JSON.stringify(scores));
+            }
+
+            function addScoreToHallOfFame(name, timeInMs) {
+                const scores = loadScores();
+                const newName = name.trim() === '' ? 'Nimetön Sankari' : name.trim().slice(0, 15);
+                scores.push({ name: newName, time: timeInMs });
+                scores.sort((a, b) => a.time - b.time);
+                const topScores = scores.slice(0, MAX_HOF_ENTRIES);
+                saveScores(topScores);
+                displayHallOfFame();
+            }
+
+            function displayHallOfFame() {
+                const scores = loadScores();
+                if(!hofList) return;
+                hofList.innerHTML = '';
+                if (scores.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = 'Kunniataulu on tyhjä.';
+                    // Linjaus hoidetaan CSS:n kautta (.hof-panel align-items: center @media pienillä näytöillä)
+                    // Varmistetaan, että teksti on vasemmalla, jos paneeli ei ole keskitetty
+                    if (!(window.innerWidth <= 960 && window.innerWidth > 0)) { 
+                         li.style.justifyContent = 'flex-start';
+                    }
+                    li.style.color = '#777'; 
+                    hofList.appendChild(li);
+                } else {
+                    scores.forEach((score, index) => {
+                        const li = document.createElement('li');
+                        const entrySpan = document.createElement('span');
+                        entrySpan.className = 'hof-entry';
+                        const rankSpan = document.createElement('span');
+                        rankSpan.className = 'hof-rank';
+                        rankSpan.textContent = `${index + 1}.`; 
+                        const playerNameSpan = document.createElement('span');
+                        playerNameSpan.className = 'hof-player-name';
+                        playerNameSpan.textContent = score.name; 
+                        entrySpan.appendChild(rankSpan);
+                        entrySpan.appendChild(playerNameSpan);
+                        
+                        const timeSpan = document.createElement('span');
+                        timeSpan.className = 'hof-time';
+                        timeSpan.textContent = formatTime(score.time);
+                        
+                        li.appendChild(entrySpan);
+                        li.appendChild(timeSpan);
+                        hofList.appendChild(li);
+                    });
+                }
+            }
+            
+            function returnToStartScreen() {
+                if (timerInterval) clearInterval(timerInterval); 
+                timerInterval = null;
+                
+                if(timerDisplay) timerDisplay.style.display = 'none';
+                if(gameContainer) gameContainer.style.display = 'none';
+                if(congratulationsArea) congratulationsArea.style.display = 'none';
+                if(startGameArea) startGameArea.style.display = 'flex';
+
+                if(letterDisplayArea) letterDisplayArea.innerHTML = '';
+                if(correctlyStackedArea) correctlyStackedArea.innerHTML = '';
+                correctlySelectedLetters = [];
+                expectedNextLetterIndex = 0;
+                
+                resetTimer(); 
+            }
+
+            function setupInitialScreen() {
+                if(startGameButton) startGameButton.addEventListener('click', startGame);
+                if(resetButton) resetButton.addEventListener('click', returnToStartScreen); 
+
+                if(cheatSheetButton) cheatSheetButton.addEventListener('click', () => {if(cheatSheetOverlay) cheatSheetOverlay.classList.add('visible')});
+                if(closeCheatSheetButton) closeCheatSheetButton.addEventListener('click', () => {if(cheatSheetOverlay) cheatSheetOverlay.classList.remove('visible')});
+                if(cheatSheetOverlay) cheatSheetOverlay.addEventListener('click', (event) => {
+                    if (event.target === cheatSheetOverlay) cheatSheetOverlay.classList.remove('visible');
+                });
+
+                if(saveScoreButton) saveScoreButton.addEventListener('click', () => {
+                    addScoreToHallOfFame(playerNameInput.value, elapsedTime);
+                    if(playerNameInput) playerNameInput.value = ''; 
+                    returnToStartScreen(); 
+                });
+            
+                if(clearHofButton) clearHofButton.addEventListener('click', () => {
+                    if(clearHofConfirmOverlay) clearHofConfirmOverlay.classList.add('visible');
+                });
+                if(confirmClearHofYesButton) confirmClearHofYesButton.addEventListener('click', () => {
+                    saveScores([]);
+                    displayHallOfFame();
+                    if(clearHofConfirmOverlay) clearHofConfirmOverlay.classList.remove('visible');
+                });
+                if(confirmClearHofNoButton) confirmClearHofNoButton.addEventListener('click', () => {
+                    if(clearHofConfirmOverlay) clearHofConfirmOverlay.classList.remove('visible');
+                });
+                if(clearHofConfirmOverlay) clearHofConfirmOverlay.addEventListener('click', (event) => {
+                    if (event.target === clearHofConfirmOverlay) clearHofConfirmOverlay.classList.remove('visible');
+                });
+
+                returnToStartScreen(); 
+                displayHallOfFame(); 
+            }
+
+            setupInitialScreen();
+        });
+    </script>
+</body>
+</html>
