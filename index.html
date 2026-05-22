@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aakkospeli</title>
+    <meta name="description" content="A simple Finnish alphabet learning game built as an AI-assisted browser prototype.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
@@ -117,6 +118,13 @@
             border: 2px solid #5a5a5a;
             border-radius: 6px;
             background-color: #383838;
+        }
+
+        .stacked-area:empty::before {
+            content: "Klikkaa ensin A-kirjainta";
+            color: #8f8f8f;
+            font-size: 0.95em;
+            letter-spacing: 0.2px;
         }
 
         .letter-grid {
@@ -674,7 +682,9 @@
                     }
                     li.style.color = '#777'; 
                     hofList.appendChild(li);
+                    if (clearHofButton) clearHofButton.style.display = 'none';
                 } else {
+                    if (clearHofButton) clearHofButton.style.display = 'inline-block';
                     scores.forEach((score, index) => {
                         const li = document.createElement('li');
                         const entrySpan = document.createElement('span');
