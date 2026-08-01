@@ -80,4 +80,7 @@ http://localhost:8000
 
 ## Data and privacy
 
-Scores are saved only in the current browser via `localStorage` under `aakkospeliHallOfFame`. No personal data is sent to a server.
+Scores are saved only in the current browser via `localStorage` under
+`aakkospeliHallOfFame`. The game has no backend, analytics, or account system.
+The page loads the Inter font from Google Fonts, so the browser makes a
+request to `fonts.googleapis.com` and `fonts.gstatic.com` when the page loads.
