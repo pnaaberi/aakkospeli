@@ -84,3 +84,19 @@ Scores are saved only in the current browser via `localStorage` under
 `aakkospeliHallOfFame`. The game has no backend, analytics, or account system.
 The page loads the Inter font from Google Fonts, so the browser makes a
 request to `fonts.googleapis.com` and `fonts.gstatic.com` when the page loads.
+
+
+## Source security maintenance
+
+Pinned CodeQL analysis checks GitHub Actions and the JavaScript embedded in
+`index.html` on pull requests, main pushes and weekly. Advanced setup is needed:
+GitHub's language detection sees only HTML and would otherwise scan Actions,
+not the game script. This adds analysis, not a runtime dependency or app build.
+CodeQL's token can read source and upload security results only; it cannot write
+repository contents. Findings require review, not automatic dismissal.
+
+`_config.yml` excludes agent instructions, README and control directories from
+legacy Pages output. Keep game/assets byte-identical for workflow-only updates
+and verify public app access plus control-file denial after Pages rebuilds.
+No production privacy, accessibility or device-wide certification is implied by
+these scanner checks.

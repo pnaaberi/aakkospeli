@@ -1,0 +1,7 @@
+# Source-control and agent instructions are not application assets.
+exclude:
+  - AGENTS.md
+  - README.md
+  - CHANGELOG.md
+  - .github
+  - .gitignore
